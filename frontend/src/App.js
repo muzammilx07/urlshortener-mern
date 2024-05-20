@@ -4,6 +4,8 @@ import './UrlShortener.css';
 
 const App = () => {
     const [originalUrl, setOriginalUrl] = useState('');
+    const [customAlias, setCustomAlias] = useState('');
+    const [expirationDate, setExpirationDate] = useState('');
     const [shortUrl, setShortUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -11,8 +13,15 @@ const App = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // Use the provided backend URL as the base URL
-            const response = await axios.post('https://urlshortener-dpwx.onrender.com/api/shorten', { originalUrl });
+            // Prepare the request body
+            const requestBody = {
+                originalUrl,
+                customAlias,
+                expirationDate
+            };
+            // Make the POST request
+            const response = await axios.post('https://urlshortener-dpwx.onrender.com/api/shorten', requestBody);
+            // Retrieve the shortened URL from the response data
             setShortUrl(response.data.shortUrl);
         } catch (error) {
             console.error('Error:', error);
@@ -31,6 +40,18 @@ const App = () => {
                     value={originalUrl}
                     onChange={(e) => setOriginalUrl(e.target.value)}
                     required
+                />
+                <input
+                    type="text"
+                    placeholder="Custom Alias"
+                    value={customAlias}
+                    onChange={(e) => setCustomAlias(e.target.value)}
+                />
+                <input
+                    type="date"
+                    placeholder="Expiration Date"
+                    value={expirationDate}
+                    onChange={(e) => setExpirationDate(e.target.value)}
                 />
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Shortening...' : 'Shorten'}
