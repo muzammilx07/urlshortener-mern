@@ -1,78 +1,68 @@
+// src/App.js
 import React, { useState } from 'react';
-import axios from 'axios';
-import './UrlShortener.css';
 
-const App = () => {
-    const [originalUrl, setOriginalUrl] = useState('');
-    const [customAlias, setCustomAlias] = useState('');
-    const [expirationDate, setExpirationDate] = useState('');
-    const [shortUrl, setShortUrl] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+function App() {
+  const [formData, setFormData] = useState({
+    originalUrl: '',
+    customAlias: '',
+    expirationDate: ''
+  });
+  const [response, setResponse] = useState(null);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-            const response = await axios.post('/api/shorten', {
-                originalUrl,
-                customAlias,
-                expirationDate
-            });
-            setShortUrl(response.data.shortUrl);
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
 
-    const handleGetShortUrl = async () => {
-        try {
-            const response = await axios.get(`/api/shorten/${customAlias}`);
-            setShortUrl(response.data.shortUrl);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:3000/create-alias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      setResponse(data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
-    return (
-        <div className="url-shortener">
-            <h2>URL Shortener</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="url"
-                    placeholder="Enter long URL"
-                    value={originalUrl}
-                    onChange={(e) => setOriginalUrl(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Custom Alias"
-                    value={customAlias}
-                    onChange={(e) => setCustomAlias(e.target.value)}
-                />
-                <input
-                    type="date"
-                    placeholder="Expiration Date"
-                    value={expirationDate}
-                    onChange={(e) => setExpirationDate(e.target.value)}
-                />
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Shortening...' : 'Shorten'}
-                </button>
-            </form>
-            <button onClick={handleGetShortUrl}>Get Short URL</button>
-            {shortUrl && (
-                <div className="short-url">
-                    <p>Short URL:</p>
-                    <a href={shortUrl} target="_blank" rel="noopener noreferrer">
-                        {shortUrl}
-                    </a>
-                </div>
-            )}
+  return (
+    <div>
+      <h2>Create Alias</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Original URL:
+          <input type="text" name="originalUrl" value={formData.originalUrl} onChange={handleChange} />
+        </label>
+        <br />
+        <label>
+          Custom Alias:
+          <input type="text" name="customAlias" value={formData.customAlias} onChange={handleChange} />
+        </label>
+        <br />
+        <label>
+          Expiration Date:
+          <input type="text" name="expirationDate" value={formData.expirationDate} onChange={handleChange} />
+        </label>
+        <br />
+        <button type="submit">Create Alias</button>
+      </form>
+      {response && (
+        <div>
+          <h3>Response:</h3>
+          <pre>{JSON.stringify(response, null, 2)}</pre>
         </div>
-    );
-};
+      )}
+    </div>
+  );
+}
 
 export default App;
