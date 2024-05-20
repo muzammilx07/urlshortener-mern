@@ -26,6 +26,15 @@ const App = () => {
         }
     };
 
+    const handleGetShortUrl = async () => {
+        try {
+            const response = await axios.get(`/api/shorten/${customAlias}`);
+            setShortUrl(response.data.shortUrl);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     return (
         <div className="url-shortener">
             <h2>URL Shortener</h2>
@@ -53,6 +62,7 @@ const App = () => {
                     {isLoading ? 'Shortening...' : 'Shorten'}
                 </button>
             </form>
+            <button onClick={handleGetShortUrl}>Get Short URL</button>
             {shortUrl && (
                 <div className="short-url">
                     <p>Short URL:</p>
