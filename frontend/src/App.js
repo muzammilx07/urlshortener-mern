@@ -11,7 +11,8 @@ const App = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await axios.post('/api/shorten', { originalUrl });
+            // Use the provided backend URL as the base URL
+            const response = await axios.post('https://urlshortener-dpwx.onrender.com/api/shorten', { originalUrl });
             setShortUrl(response.data.shortUrl);
         } catch (error) {
             console.error('Error:', error);
