@@ -13,15 +13,13 @@ const App = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // Prepare the request body
-            const requestBody = {
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const apiUrl = 'https://urlshortener-dpwx.onrender.com/api/shorten';
+            const response = await axios.post(proxyUrl + apiUrl, {
                 originalUrl,
                 customAlias,
                 expirationDate
-            };
-            // Make the POST request
-            const response = await axios.post('https://urlshortener-dpwx.onrender.com/api/shorten', requestBody);
-            // Retrieve the shortened URL from the response data
+            });
             setShortUrl(response.data.shortUrl);
         } catch (error) {
             console.error('Error:', error);
