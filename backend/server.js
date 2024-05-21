@@ -7,9 +7,19 @@ dotenv.config();
 const app = express();
 connectDB();
 
+const allowedOrigins = ["https://urlshortener-mern.vercel.app", "http://localhost:3000"];
+
 app.use(cors({
-  origin: ["https://urlshortener-dpwx.onrender.com", "http://localhost:3000"],
-  methods: ["GET", "POST"]
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST"],
+  credentials: true,
+  optionsSuccessStatus: 204
 }));
 
 app.use(express.json());
